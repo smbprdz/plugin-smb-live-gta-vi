@@ -1,5 +1,11 @@
 # Histórico de versões
 
+## 1.2.0
+
+- Seletor de idioma da interface com 12 traduções e modo automático baseado no Chrome.
+- Textos das Opções, nomes dos países, contagens e mensagens do botão traduzidos. A preferência fica separada da região do sorteio.
+- Guia de instalação e captura de tela em inglês no GitHub.
+
 ## 1.1.0
 
 - Seletor com todas as regiões ou um dos 249 países e territórios da lista ISO 3166-1.

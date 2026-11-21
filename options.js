@@ -1,3 +1,4 @@
+import { INTERFACE_LANGUAGES, normalizeInterfaceLanguage, SYSTEM_LANGUAGE, translateInterface } from "./lib/i18n.js";
 import { getStorage, setStorage } from "./lib/storage.js";
 import { readCycle } from "./lib/cycle.js";
 import { normalizeRegionMode, readRegionSelection, regionOptions, WORLD } from "./lib/regions.js";
@@ -9,9 +10,8 @@ const region = document.querySelector("#region");
 const regionMode = document.querySelector("#region-mode");
 const regionStatus = document.querySelector("#region-status");
 const regionModeHint = document.querySelector("#region-mode-hint");
-for (const [code, label] of regionOptions()) {
-  region.add(new Option(label, code));
-}
+const language = document.querySelector("#interface-language");
+const languageStatus = document.querySelector("#language-status");
 const reset = document.querySelector("#reset-cycle");
 const platformsStatus = document.querySelector("#platforms-status");
 const separateStatus = document.querySelector("#separate-status");
@@ -20,6 +20,30 @@ const summary = document.querySelector("#cycle-summary");
 const discovery = document.querySelector("#discovery-status");
 const art = document.querySelector("#hero-art");
 const artCredit = document.querySelector("#art-credit");
+
+let ui;
+
+function renderLanguage(choice) {
+  const localization = translateInterface(choice);
+  if (ui?.locale !== localization.locale) {
+    ui = localization;
+    document.documentElement.lang = ui.locale;
+    for (const node of document.querySelectorAll("[data-i18n]")) {
+      node.textContent = ui.t(node.dataset.i18n);
+    }
+    language.replaceChildren(
+      new Option(ui.t("automatic"), SYSTEM_LANGUAGE),
+      ...Object.entries(INTERFACE_LANGUAGES).map(([code, label]) => new Option(label, code))
+    );
+    region.replaceChildren(
+      ...regionOptions(ui.locale, ui.t("world")).map(([code, label]) => new Option(label, code))
+    );
+    for (const status of [languageStatus, platformsStatus, regionStatus, separateStatus, resetStatus]) {
+      status.textContent = "";
+    }
+  }
+  language.value = normalizeInterfaceLanguage(choice);
+}
 
 function hideFailedArt() {
   art.hidden = true;
@@ -30,13 +54,8 @@ if (art.complete && !art.naturalWidth) hideFailedArt();
 
 function renderRegionHint(selection) {
   regionMode.disabled = selection.region === WORLD;
-  if (selection.mode === "all") {
-    regionModeHint.textContent = "Entram as transmissões encontradas em qualquer região.";
-  } else if (selection.mode === "prefer") {
-    regionModeHint.textContent = "As lives com sinais da região saem primeiro. As demais também entram na rodada.";
-  } else {
-    regionModeHint.textContent = "Entram as lives com sinais da região. Algumas podem ficar de fora quando faltam informações.";
-  }
+  const keys = { all: "hintWorld", prefer: "hintPrefer", only: "hintOnly" };
+  regionModeHint.textContent = ui.t(keys[selection.mode]);
 }
 
 function renderDiscovery(report, platforms, selection) {
@@ -48,17 +67,20 @@ function renderDiscovery(report, platforms, selection) {
   const details = Object.entries(report?.sources ?? {}).flatMap(([id, source]) => {
     if (!platforms[id] || !Object.hasOwn(PLATFORM_LABELS, id)) return [];
     const label = PLATFORM_LABELS[id];
-    if (source.state === "unavailable") return [label + " indisponível"];
-    const partial = source.state === "partial" ? " (consulta parcial)" : "";
-    const regional = selection.mode === "prefer" ? " (" + (source.regional ?? 0) + " da região)" : "";
-    return [label + " " + source.count + regional + partial];
+    if (source.state === "unavailable") return [ui.t("sourceUnavailable", { source: label })];
+    const partial = source.state === "partial" ? ui.t("sourcePartial") : "";
+    const regional = selection.mode === "prefer"
+      ? ui.t("sourceRegional", { count: ui.number(source.regional ?? 0) })
+      : "";
+    return [label + " " + ui.number(source.count) + regional + partial];
   });
   discovery.hidden = !details.length;
-  discovery.textContent = details.length ? "Última busca: " + details.join(" · ") : "";
+  discovery.textContent = details.length ? ui.t("lastSearch", { results: details.join(" · ") }) : "";
 }
 
 async function refresh() {
   const settings = await getStorage({ ...DEFAULT_SETTINGS, cycles: {}, lastDiscovery: null });
+  renderLanguage(settings.interfaceLanguage);
   const platforms = normalizePlatforms(settings.platforms);
   const separateLives = settings.separateLives !== false;
   for (const [id, input] of Object.entries(inputs)) input.checked = platforms[id];
@@ -69,12 +91,21 @@ async function refresh() {
   regionMode.value = normalizeRegionMode(settings.regionMode);
   renderRegionHint(selection);
   const count = readCycle(settings.cycles, selection).seen.length;
-  const drawn = separateLives
-    ? (count === 1 ? "transmissão já sorteada" : "transmissões já sorteadas")
-    : (count === 1 ? "criador já sorteado" : "criadores já sorteados");
-  summary.textContent = count ? count + " " + drawn + " nesta rodada." : "Rodada nova. Nenhuma live sorteada ainda.";
+  const summaryKey = count ? (separateLives ? "roundStreams" : "roundCreators") : "roundEmpty";
+  summary.textContent = ui.t(summaryKey, { count: ui.number(count) });
   renderDiscovery(settings.lastDiscovery, platforms, selection);
 }
+
+language.addEventListener("change", async () => {
+  try {
+    await setStorage({ interfaceLanguage: normalizeInterfaceLanguage(language.value) });
+    await refresh();
+    languageStatus.textContent = ui.t("languageSaved");
+  } catch {
+    await refresh().catch(() => {});
+    languageStatus.textContent = ui.t("languageError");
+  }
+});
 
 for (const input of Object.values(inputs)) {
   input.addEventListener("change", async () => {
@@ -82,15 +113,15 @@ for (const input of Object.values(inputs)) {
     const active = Object.keys(platforms).filter((id) => platforms[id]);
     if (!active.length) {
       input.checked = true;
-      platformsStatus.textContent = "Deixe pelo menos uma plataforma ligada.";
+      platformsStatus.textContent = ui.t("platformRequired");
       return;
     }
 
     try {
       await setStorage({ platforms });
-      platformsStatus.textContent = "Sorteando entre " + active.map((id) => PLATFORM_LABELS[id]).join(", ") + ".";
+      platformsStatus.textContent = ui.t("platformsSaved", { platforms: ui.list(active.map((id) => PLATFORM_LABELS[id])) });
     } catch {
-      platformsStatus.textContent = "Falha ao salvar as plataformas.";
+      platformsStatus.textContent = ui.t("platformsError");
       await refresh().catch(() => {});
     }
   });
@@ -99,11 +130,9 @@ for (const input of Object.values(inputs)) {
 separate.addEventListener("change", async () => {
   try {
     await setStorage({ separateLives: separate.checked });
-    separateStatus.textContent = separate.checked
-      ? "Cada transmissão entra separadamente."
-      : "Canais com nomes semelhantes ocupam uma vaga só.";
+    separateStatus.textContent = ui.t(separate.checked ? "separateOn" : "separateOff");
   } catch {
-    separateStatus.textContent = "Falha ao salvar o modo de sorteio.";
+    separateStatus.textContent = ui.t("separateError");
     await refresh().catch(() => {});
   }
 });
@@ -113,9 +142,9 @@ async function saveRegion() {
   renderRegionHint(readRegionSelection(settings));
   try {
     await setStorage(settings);
-    regionStatus.textContent = "Preferência regional salva.";
+    regionStatus.textContent = ui.t("regionSaved");
   } catch {
-    regionStatus.textContent = "Falha ao salvar a região.";
+    regionStatus.textContent = ui.t("regionError");
     await refresh().catch(() => {});
   }
 }
@@ -132,18 +161,21 @@ reset.addEventListener("click", async () => {
       regionMode: regionMode.value,
       separateLives: separate.checked
     });
-    if (!response?.ok) throw new Error("Falha ao reiniciar");
-    resetStatus.textContent = "Rodada reiniciada.";
+    if (!response?.ok) throw new Error("Round reset failed");
+    resetStatus.textContent = ui.t("resetSaved");
   } catch {
-    resetStatus.textContent = "Falha ao reiniciar a rodada.";
+    resetStatus.textContent = ui.t("resetError");
   } finally {
     reset.disabled = false;
   }
 });
 
 function loadSettings() {
-  refresh().catch(() => { summary.textContent = "Falha ao carregar a rodada."; });
+  refresh().catch(() => { summary.textContent = ui.t("loadError"); });
 }
+
+renderLanguage(SYSTEM_LANGUAGE);
+summary.textContent = ui.t("roundLoading");
 chrome.storage.onChanged.addListener((_changes, area) => {
   if (area === "local") loadSettings();
 });

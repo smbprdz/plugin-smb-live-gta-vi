@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SMB Live GTA VI",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Sorteie lives de GTA VI na Twitch, YouTube ou Kick. Escolha a região e descubra novas transmissões sem repetir.",
   "permissions": [
     "storage"
@@ -16,7 +16,7 @@
     "type": "module"
   },
   "action": {
-    "default_title": "Sortear live de GTA VI",
+    "default_title": "SMB Live GTA VI",
     "default_icon": {
       "16": "icons/live-16.png",
       "32": "icons/live-32.png",

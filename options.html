@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="no-referrer">
-    <title>Opções - SMB Live GTA VI</title>
+    <title data-i18n="pageTitle">Opções - SMB Live GTA VI</title>
     <link rel="stylesheet" href="options.css">
   </head>
   <body>
@@ -17,22 +17,22 @@
           <div>
             <span class="wordmark">SMB</span>
             <h1>Live <span>GTA VI</span></h1>
-            <p>Configurações do sorteio</p>
+            <p data-i18n="subtitle">Configurações do sorteio</p>
           </div>
         </div>
         <a class="art-credit" id="art-credit" href="https://www.rockstargames.com/VI/media"
-          target="_blank" rel="noopener noreferrer">Arte: Rockstar Games</a>
+          target="_blank" rel="noopener noreferrer" data-i18n="artCredit">Arte: Rockstar Games</a>
       </header>
 
       <section class="panel" aria-labelledby="platforms-title">
-        <h2 id="platforms-title">Plataformas no sorteio</h2>
-        <p class="hint">Clique no ícone da extensão para abrir uma live das plataformas marcadas.</p>
+        <h2 id="platforms-title" data-i18n="platformsTitle">Plataformas no sorteio</h2>
+        <p class="hint" data-i18n="platformHint">Clique no ícone da extensão para abrir uma live das plataformas marcadas.</p>
 
         <label class="choice">
           <input type="checkbox" id="platform-twitch" checked>
           <span>
             <strong>Twitch</strong>
-            <small>Categoria GTA VI, idioma declarado e sinais regionais.</small>
+            <small data-i18n="platformCategory">Categoria GTA VI, idioma declarado e sinais regionais.</small>
           </span>
         </label>
 
@@ -40,7 +40,7 @@
           <input type="checkbox" id="platform-youtube" checked>
           <span>
             <strong>YouTube</strong>
-            <small>Busca de lives de GTA VI ajustada à região selecionada.</small>
+            <small data-i18n="platformYoutube">Busca de lives de GTA VI ajustada à região selecionada.</small>
           </span>
         </label>
 
@@ -48,25 +48,34 @@
           <input type="checkbox" id="platform-kick" checked>
           <span>
             <strong>Kick</strong>
-            <small>Categoria GTA VI, idioma declarado e sinais regionais.</small>
+            <small data-i18n="platformCategory">Categoria GTA VI, idioma declarado e sinais regionais.</small>
           </span>
         </label>
         <p id="platforms-status" class="status" role="status"></p>
       </section>
 
+      <section class="panel" aria-labelledby="language-title">
+        <h2 id="language-title" data-i18n="languageTitle">Idioma da interface</h2>
+        <p class="hint" id="language-hint" data-i18n="languageHint">Muda o idioma destas opções. A região do sorteio é independente.</p>
+        <label class="region-fields">
+          <select id="interface-language" aria-labelledby="language-title" aria-describedby="language-hint"></select>
+        </label>
+        <p class="status" id="language-status" role="status"></p>
+      </section>
+
       <section class="panel" aria-labelledby="region-title">
-        <h2 id="region-title">Região do sorteio</h2>
-        <p class="hint" id="region-hint">A região é estimada pelos sinais públicos da live ou do canal.</p>
+        <h2 id="region-title" data-i18n="regionTitle">Região do sorteio</h2>
+        <p class="hint" id="region-hint" data-i18n="regionHint">A região é estimada pelos sinais públicos da live ou do canal.</p>
         <div class="region-fields">
           <label>
-            País ou região
+            <span data-i18n="regionLabel">País ou região</span>
             <select id="region" aria-describedby="region-hint"></select>
           </label>
           <label>
-            Como usar a região
+            <span data-i18n="regionModeLabel">Como usar a região</span>
             <select id="region-mode" aria-describedby="region-mode-hint">
-              <option value="prefer">Priorizar esta região</option>
-              <option value="only">Só lives com sinais desta região</option>
+              <option value="prefer" data-i18n="preferRegion">Priorizar esta região</option>
+              <option value="only" data-i18n="onlyRegion">Só lives com sinais desta região</option>
             </select>
           </label>
         </div>
@@ -75,28 +84,28 @@
       </section>
 
       <section class="panel" aria-labelledby="creators-title">
-        <h2 id="creators-title">Quando o criador está em mais de uma plataforma</h2>
+        <h2 id="creators-title" data-i18n="creatorTitle">Quando o criador está em mais de uma plataforma</h2>
         <label class="choice">
           <input type="checkbox" id="separate-lives" checked>
           <span>
-            <strong>Sortear cada transmissão separadamente</strong>
-            <small>Uma live na Twitch e outra na Kick ganham uma vaga cada. Desmarque para agrupar canais com nomes de usuário semelhantes.</small>
+            <strong data-i18n="creatorLabel">Sortear cada transmissão separadamente</strong>
+            <small data-i18n="creatorHint">Uma live na Twitch e outra na Kick ganham uma vaga cada. Desmarque para agrupar canais com nomes de usuário semelhantes.</small>
           </span>
         </label>
         <p id="separate-status" class="status" role="status"></p>
       </section>
 
       <section class="panel" aria-labelledby="round-title">
-        <h2 id="round-title">Rodada atual</h2>
-        <p class="hint" id="cycle-summary">Carregando rodada…</p>
-        <button type="button" id="reset-cycle">Reiniciar rodada</button>
+        <h2 id="round-title" data-i18n="roundTitle">Rodada atual</h2>
+        <p class="hint" id="cycle-summary" data-i18n="roundLoading">Carregando rodada…</p>
+        <button type="button" id="reset-cycle" data-i18n="reset">Reiniciar rodada</button>
         <p id="reset-status" class="status" role="status"></p>
         <p id="discovery-status" class="discovery" hidden></p>
       </section>
 
       <section class="panel notice" aria-labelledby="notice-title">
-        <h2 id="notice-title">Sem repetição precoce</h2>
-        <p>Cada vaga sai uma vez por rodada. Com uma região priorizada, as lives com sinais dela saem primeiro.</p>
+        <h2 id="notice-title" data-i18n="noticeTitle">Sem repetição precoce</h2>
+        <p data-i18n="noticeText">Cada vaga sai uma vez por rodada. Com uma região priorizada, as lives com sinais dela saem primeiro.</p>
       </section>
     </main>
     <script type="module" src="options.js"></script>

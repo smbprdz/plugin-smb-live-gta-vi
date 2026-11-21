@@ -11,3 +11,7 @@ Use os [formulários de Issues](https://github.com/smbprdz/plugin-smb-live-gta-v
 5. Abra um pull request com a mudança, o cenário reproduzido e o que foi verificado no Chrome.
 
 Ao alterar um adapter, preserve o funcionamento das outras plataformas quando a fonte falhar. Ao ajustar os sinais regionais, documente a evidência e inclua um caso ambíguo junto do caso positivo. Use links públicos ou exemplos sintéticos ao anexar evidências.
+
+## Traduções
+
+Os textos ficam em `lib/locales/`. Para ajustar uma tradução, preserve os identificadores e os marcadores como `{count}` e `{results}`. Ao adicionar um idioma, registre o catálogo em `lib/i18n.js`, rode os testes e confira a tela em largura estreita.

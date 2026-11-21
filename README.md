@@ -4,7 +4,8 @@
 <p align="center">
   <strong><a href="https://github.com/smbprdz/plugin-smb-live-gta-vi/releases/latest">Baixar para Chrome</a></strong> ·
   <a href="#como-funciona">Como funciona</a> ·
-  <a href="CONTRIBUTING.md">Contribuir</a>
+  <a href="CONTRIBUTING.md">Contribuir</a> ·
+  <a href="README.en.md">English</a>
 </p>
 
 ![Opções da extensão SMB Live GTA VI com seleção de plataformas, região e modo de sorteio](docs/opcoes.png)
@@ -29,6 +30,8 @@ O clique consulta **Twitch, YouTube e Kick** em paralelo e abre a live sorteada 
 | **País ou território + Só lives com sinais** | Entram apenas as lives com indícios públicos da região escolhida. Brasil é o padrão. |
 
 Cada vaga sai uma vez antes de a rodada recomeçar, sem peso por audiência. Por padrão, cada transmissão ocupa uma vaga. O modo por criador aproxima a identidade pelo nome de usuário. Cada seleção regional guarda sua própria rodada, e **Reiniciar rodada** limpa a rodada atual.
+
+Em **Idioma da interface**, siga o idioma do Chrome ou escolha entre 12 traduções. Essa opção é independente da região do sorteio.
 
 ### Cobertura e sinais regionais
 
