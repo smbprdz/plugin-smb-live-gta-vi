@@ -3,10 +3,11 @@ import * as youtube from "./platforms/youtube.js";
 import * as kick from "./platforms/kick.js";
 import { drawAndOpen, resetCycle } from "./lib/cycle.js";
 import { collectCandidates, readSettings } from "./lib/orchestrator.js";
+import { readRegionSelection } from "./lib/regions.js";
 import { setStorage } from "./lib/storage.js";
 
 const ADAPTERS = [twitch, youtube, kick];
-const ACTION_TITLE = "Sortear live BR de GTA VI";
+const ACTION_TITLE = "Sortear live de GTA VI";
 let drawing = false;
 
 async function setBadge(text, title = ACTION_TITLE) {
@@ -21,21 +22,22 @@ async function openRandomLive() {
   if (drawing) return;
   drawing = true;
   try {
-    await setBadge("…", "Buscando lives BR de GTA VI");
-    const { platformIds, separateLives } = await readSettings();
+    await setBadge("…", "Buscando lives de GTA VI");
+    const selection = await readSettings();
+    const { platformIds, region, mode } = selection;
     if (!platformIds.length) {
       await setBadge("!", "Ative uma plataforma nas Opções.");
       return;
     }
 
-    const { candidates, sources } = await collectCandidates(ADAPTERS, platformIds);
-    await setStorage({ lastDiscovery: { at: Date.now(), sources } });
-    const chosen = await drawAndOpen(candidates, separateLives, (url) => chrome.tabs.create({ url }));
+    const { candidates, sources } = await collectCandidates(ADAPTERS, platformIds, selection);
+    await setStorage({ lastDiscovery: { at: Date.now(), region, mode, sources } });
+    const chosen = await drawAndOpen(candidates, selection, (url) => chrome.tabs.create({ url }));
     const unavailable = Object.values(sources).some((source) => source.state === "unavailable");
     if (unavailable || (!chosen && Object.values(sources).some((source) => source.state === "partial"))) {
       await setBadge("!", "Consulta parcial. Veja os detalhes nas Opções.");
     } else if (!chosen) {
-      await setBadge("0", "Nenhuma live BR de GTA VI encontrada agora.");
+      await setBadge("0", "Nenhuma live de GTA VI encontrada para estas opções.");
     } else {
       await setBadge("");
     }
@@ -51,7 +53,7 @@ chrome.action.onClicked.addListener(openRandomLive);
 
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
   if (sender.url !== chrome.runtime.getURL("options.html") || message?.type !== "reset-round") return false;
-  resetCycle(message.separateLives !== false).then(
+  resetCycle({ ...readRegionSelection(message), separateLives: message.separateLives !== false }).then(
     () => respond({ ok: true }),
     () => respond({ ok: false })
   );

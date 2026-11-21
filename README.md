@@ -1,34 +1,52 @@
-# SMB Live GTA VI
+<p align="center"><img src="icons/live-128.png" width="72" height="72" alt=""></p>
+<h1 align="center">SMB Live GTA VI</h1>
+<p align="center">Descubra quem está jogando GTA VI ao vivo, com um clique no Chrome.</p>
+<p align="center">
+  <strong><a href="https://github.com/smbprdz/plugin-smb-live-gta-vi/releases/latest">Baixar para Chrome</a></strong> ·
+  <a href="#como-funciona">Como funciona</a> ·
+  <a href="CONTRIBUTING.md">Contribuir</a>
+</p>
 
-Extensão para Chrome que abre, com um clique, uma live de **Grand Theft Auto VI em português do Brasil** na Twitch, no YouTube ou na Kick. É a versão GTA VI do [SMB Live Zomboid](https://github.com/smbprdz/plugin-smb-live-zomboid).
+![Opções da extensão SMB Live GTA VI com seleção de plataformas, região e modo de sorteio](docs/opcoes.png)
 
-## Instalação
+## Instalação no Chrome
 
-1. [Baixe o ZIP](https://github.com/smbprdz/plugin-smb-live-gta-vi/archive/refs/heads/main.zip) e extraia a pasta do repositório.
-2. Abra `chrome://extensions` e ative o **Modo do desenvolvedor**.
-3. Clique em **Carregar sem compactação** e escolha a pasta que contém `manifest.json`.
-4. Fixe **SMB Live GTA VI** na barra de ferramentas. Clique no ícone para sortear. O botão direito abre as **Opções**.
+1. Abra a [release mais recente](https://github.com/smbprdz/plugin-smb-live-gta-vi/releases/latest) e baixe o arquivo `smb-live-gta-vi-<versão>.zip` em **Assets**.
+2. Extraia o ZIP. Abra `chrome://extensions` e ative o **Modo do desenvolvedor**.
+3. Clique em **Carregar sem compactação** e selecione a pasta extraída que contém `manifest.json`.
+4. Fixe a extensão na barra do Chrome. Clique no ícone para sortear ou use o botão direito e abra **Opções**.
 
-## Sorteio
+Para atualizar, coloque os arquivos da release nova na mesma pasta e clique em **Recarregar** em `chrome://extensions`. Usar a mesma pasta preserva as preferências e o histórico.
 
-- A live sorteada abre diretamente em nova aba. As três plataformas começam ligadas e podem ser configuradas nas Opções.
-- O sorteio percorre as entradas descobertas na rodada, com a mesma chance para cada entrada disponível e sem peso por audiência.
-- Cada transmissão ocupa uma vaga por padrão. O modo por criador aproxima a identidade pelo nome de usuário e pode deixar de agrupar perfis com nomes diferentes. Cada modo mantém a sua rodada.
-- **Reiniciar rodada** limpa o histórico do modo selecionado. As Opções exibem quantas entradas já saíram e o resultado da última busca.
-- Se uma plataforma falhar, as transmissões encontradas nas outras continuam no sorteio.
+## Como funciona
 
-## Cobertura do Brasil
+O clique consulta **Twitch, YouTube e Kick** em paralelo e abre a live sorteada em nova aba. Você pode ajustar as plataformas, a região e o modo de rodada nas **Opções**.
 
-| Plataforma | Como entra uma live |
+| Região do sorteio | O que entra na rodada |
 | --- | --- |
-| Twitch | Categoria Grand Theft Auto VI, filtro Português e sinais públicos de PT-BR. |
-| Kick | Categoria Grand Theft Auto VI, idioma declarado e sinais públicos de PT-BR. |
-| YouTube | Busca de lives em andamento com GTA VI ou GTA 6 no título e sinais públicos de PT-BR. |
+| **Todas as regiões** | Qualquer live elegível encontrada, independentemente da origem. |
+| **País ou território + Priorizar** | As lives com sinais da região saem primeiro. As demais também têm sua vez. |
+| **País ou território + Só lives com sinais** | Entram apenas as lives com indícios públicos da região escolhida. Brasil é o padrão. |
 
-O recorte PT-BR fica ativo em todos os sorteios. A extensão usa os metadados disponíveis para estimar idioma e público, então pode omitir lives brasileiras com informações insuficientes. A cobertura depende das listagens, da paginação disponível e dos limites de busca de cada plataforma. O contador de uma consulta parcial informa quantas entradas elegíveis apareceram naquela consulta. As consultas usam uma memória temporária de até 45 segundos no worker.
+Cada vaga sai uma vez antes de a rodada recomeçar, sem peso por audiência. Por padrão, cada transmissão ocupa uma vaga. O modo por criador aproxima a identidade pelo nome de usuário. Cada seleção regional guarda sua própria rodada, e **Reiniciar rodada** limpa a rodada atual.
 
-## Código e arte
+### Cobertura e sinais regionais
 
-A extensão usa Manifest V3, JavaScript e armazenamento local, sem conta, servidor próprio ou configuração de chave de API. Consulte [PRIVACY.md](PRIVACY.md) e [NOTICE.md](NOTICE.md).
+A Twitch e a Kick usam a categoria oficial de GTA VI. O YouTube usa buscas de GTA VI com selo de transmissão em andamento, ajustadas ao país quando selecionado. A extensão usa país declarado, etiquetas e outros sinais públicos. Um idioma compartilhado por vários países, como inglês ou espanhol, sozinho não identifica um país.
 
-O código usa a licença MIT. A arte **Jason and Lucia Rooftop** vem da galeria oficial da Rockstar Games, por referência direta. Projeto independente de fãs. [Galeria de GTA VI](https://www.rockstargames.com/VI/media)
+Os resultados dependem do que cada plataforma expõe. Uma live pode ficar de fora se a busca não a retornar ou se os metadados forem insuficientes. As **Opções** mostram o resultado da última consulta e sinalizam quando uma plataforma respondeu parcialmente ou ficou indisponível.
+
+## Código aberto
+
+A extensão usa JavaScript e Manifest V3. Preferências e rodadas ficam no navegador. As consultas dispensam login, chave de API e servidor próprio.
+
+| Entrada | Responsabilidade |
+| --- | --- |
+| [`background.js`](background.js) | Recebe o clique e abre a transmissão sorteada. |
+| [`platforms/`](platforms/) | Descobre lives nas três plataformas. |
+| [`lib/`](lib/) | Interpreta a região, monta o conjunto e guarda a rodada. |
+| [`options.html`](options.html) | Tela de opções. |
+
+Quer relatar um problema ou sugerir uma melhoria? Use os [formulários de Issues](https://github.com/smbprdz/plugin-smb-live-gta-vi/issues/new/choose). Para conferir o histórico e a política de dados, veja o [changelog](CHANGELOG.md) e a [privacidade](PRIVACY.md).
+
+Projeto independente de fãs, derivado do [SMB Live Zomboid](https://github.com/smbprdz/plugin-smb-live-zomboid). Código sob [MIT](LICENSE). A arte oficial de Jason e Lucia é da Rockstar Games. [Créditos](NOTICE.md)

@@ -1,0 +1,29 @@
+name: Relatar um problema
+description: Informe o que aconteceu ao instalar, configurar ou usar o sorteio.
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: Versão da extensão e do Chrome
+      placeholder: "Exemplo: extensão 1.1.0, Chrome 151"
+    validations:
+      required: true
+  - type: input
+    id: selection
+    attributes:
+      label: Plataformas, região e modo
+      placeholder: "Exemplo: Twitch e Kick, Brasil, só lives com sinais"
+  - type: textarea
+    id: steps
+    attributes:
+      label: Como reproduzir
+      description: Escreva os passos e informe o que esperava que acontecesse.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: O que aconteceu
+      description: Inclua a mensagem exibida e o horário aproximado, se houver. Use somente links públicos.
+    validations:
+      required: true

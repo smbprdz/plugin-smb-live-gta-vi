@@ -1,5 +1,7 @@
 # Créditos
 
-SMB Live GTA VI é uma extensão de fãs mantida por SMB. A base de código vem do [SMB Live Zomboid](https://github.com/smbprdz/plugin-smb-live-zomboid), sob licença MIT.
+**SMB Live GTA VI** é um projeto independente de fãs mantido por SMBproduz. Parte do código vem do [SMB Live Zomboid](https://github.com/smbprdz/plugin-smb-live-zomboid), também sob licença MIT.
 
-**Jason and Lucia Rooftop** é uma arte oficial de Grand Theft Auto VI, exibida nas Opções diretamente da galeria da Rockstar Games. A imagem e as marcas pertencem aos respectivos titulares. A licença MIT deste repositório se aplica ao código e ao ícone SMB, e a arte oficial mantém seus direitos de origem. [Galeria de GTA VI](https://www.rockstargames.com/VI/media)
+**Jason and Lucia Rooftop** é arte oficial de Grand Theft Auto VI. Ela aparece na tela de Opções por referência direta à galeria oficial e na captura de tela que demonstra essa interface. A imagem e as marcas correspondentes pertencem aos respectivos titulares e ficam fora da licença MIT. [Galeria de GTA VI](https://www.rockstargames.com/VI/media)
+
+A licença MIT se aplica ao código e ao ícone próprio da extensão. Os respectivos titulares conservam os direitos sobre Twitch, YouTube, Kick e Grand Theft Auto.

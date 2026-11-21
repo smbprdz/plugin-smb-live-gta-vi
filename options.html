@@ -32,7 +32,7 @@
           <input type="checkbox" id="platform-twitch" checked>
           <span>
             <strong>Twitch</strong>
-            <small>Categoria GTA VI, idioma declarado e sinais de Brasil.</small>
+            <small>Categoria GTA VI, idioma declarado e sinais regionais.</small>
           </span>
         </label>
 
@@ -40,7 +40,7 @@
           <input type="checkbox" id="platform-youtube" checked>
           <span>
             <strong>YouTube</strong>
-            <small>Busca de lives de GTA VI com sinais de PT-BR no título ou canal.</small>
+            <small>Busca de lives de GTA VI ajustada à região selecionada.</small>
           </span>
         </label>
 
@@ -48,18 +48,30 @@
           <input type="checkbox" id="platform-kick" checked>
           <span>
             <strong>Kick</strong>
-            <small>Categoria GTA VI, idioma declarado e sinais de Brasil.</small>
+            <small>Categoria GTA VI, idioma declarado e sinais regionais.</small>
           </span>
         </label>
         <p id="platforms-status" class="status" role="status"></p>
       </section>
 
-      <section class="panel locale" aria-labelledby="locale-title">
-        <div>
-          <h2 id="locale-title">Idioma do sorteio</h2>
-          <p>Entram as lives com sinais públicos de português do Brasil.</p>
+      <section class="panel" aria-labelledby="region-title">
+        <h2 id="region-title">Região do sorteio</h2>
+        <p class="hint" id="region-hint">A região é estimada pelos sinais públicos da live ou do canal.</p>
+        <div class="region-fields">
+          <label>
+            País ou região
+            <select id="region" aria-describedby="region-hint"></select>
+          </label>
+          <label>
+            Como usar a região
+            <select id="region-mode" aria-describedby="region-mode-hint">
+              <option value="prefer">Priorizar esta região</option>
+              <option value="only">Só lives com sinais desta região</option>
+            </select>
+          </label>
         </div>
-        <span class="locale-tag">Brasil · PT-BR</span>
+        <p class="hint region-mode-hint" id="region-mode-hint"></p>
+        <p class="status" id="region-status" role="status"></p>
       </section>
 
       <section class="panel" aria-labelledby="creators-title">
@@ -84,7 +96,7 @@
 
       <section class="panel notice" aria-labelledby="notice-title">
         <h2 id="notice-title">Sem repetição precoce</h2>
-        <p>Cada vaga tem a mesma chance de sair. Depois de sorteada, só volta na próxima rodada.</p>
+        <p>Cada vaga sai uma vez por rodada. Com uma região priorizada, as lives com sinais dela saem primeiro.</p>
       </section>
     </main>
     <script type="module" src="options.js"></script>

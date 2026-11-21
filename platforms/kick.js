@@ -1,4 +1,5 @@
-import { isBrazilianAudience, isOtherGameOrReplay } from "../lib/brasil.js";
+import { isOtherGameOrReplay } from "../lib/brasil.js";
+import { hasRegionSignals, regionProfile } from "../lib/regions.js";
 import { makeCandidate } from "../lib/candidates.js";
 
 const LISTING = "https://kick.com/stream/livestreams/en";
@@ -14,9 +15,9 @@ function categoryMatches(category) {
   return Number(category?.id) === CATEGORY_ID || category?.slug === CATEGORY_SLUG;
 }
 
-export function candidatesFromStreams(streams) {
+export function candidatesFromStreams(streams, profile) {
   return streams.flatMap((stream) => {
-    if (stream?.is_live !== true || !stream.language || !Array.isArray(stream.categories) || !stream.categories.some(categoryMatches)) return [];
+    if (stream?.is_live !== true || !Array.isArray(stream.categories) || !stream.categories.some(categoryMatches)) return [];
     const user = stream.channel?.user;
     const login = stream.channel?.slug;
     if (!LOGIN.test(login ?? "")) return [];
@@ -24,11 +25,12 @@ export function candidatesFromStreams(streams) {
     const displayName = user?.username || login;
     const tags = (Array.isArray(stream.tags) ? stream.tags : []).map((tag) => typeof tag === "string" ? tag : tag?.name);
     tags.push(user?.bio);
-    if (isOtherGameOrReplay(title) || !isBrazilianAudience({ language: stream.language, title, name: displayName, tags, country: user?.country })) return [];
+    if (isOtherGameOrReplay(title)) return [];
 
     return [makeCandidate({
       platform: id, channelId: login.toLowerCase(), displayName, handle: login,
-      url: `https://kick.com/${login}`, title
+      url: `https://kick.com/${login}`, title,
+      regionalMatch: hasRegionSignals(profile, { language: stream.language, title, name: displayName, details: user?.bio, tags, country: user?.country })
     })];
   });
 }
@@ -45,11 +47,12 @@ async function fetchPage(page, signal) {
   return { streams: payload.data, hasNext: Boolean(payload.next_page_url) };
 }
 
-export async function fetchLiveChannels() {
+export async function fetchLiveChannels({ region }) {
+  const profile = regionProfile(region);
   const signal = AbortSignal.timeout(11000);
   const candidates = [];
   const first = await fetchPage(1, signal);
-  candidates.push(...candidatesFromStreams(first.streams));
+  candidates.push(...candidatesFromStreams(first.streams, profile));
   if (!first.hasNext) return { candidates, complete: true };
 
   let missing = false;
@@ -63,7 +66,7 @@ export async function fetchLiveChannels() {
         missing = true;
         continue;
       }
-      candidates.push(...candidatesFromStreams(result.value.streams));
+      candidates.push(...candidatesFromStreams(result.value.streams, profile));
       if (!result.value.hasNext) return { candidates, complete: !missing };
     }
   }

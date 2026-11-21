@@ -1,4 +1,5 @@
-import { isBrazilianAudience, isOtherGameOrReplay } from "../lib/brasil.js";
+import { isOtherGameOrReplay } from "../lib/brasil.js";
+import { hasRegionSignals, regionProfile, WORLD } from "../lib/regions.js";
 import { makeCandidate } from "../lib/candidates.js";
 
 const GQL_URL = "https://gql.twitch.tv/gql";
@@ -9,7 +10,7 @@ const LOGIN = /^[a-z0-9_]{3,25}$/i;
 
 export const id = "twitch";
 
-function directoryRequest(sort) {
+function directoryRequest(sort, language) {
   return [{
     operationName: "DirectoryPage_Game",
     variables: {
@@ -21,7 +22,7 @@ function directoryRequest(sort) {
         requestID: "JIRA-VXP-2397",
         freeformTags: null,
         tags: [],
-        broadcasterLanguages: ["PT"],
+        broadcasterLanguages: language ? [language.toUpperCase()] : [],
         systemFilters: []
       },
       sortTypeIsRecency: false,
@@ -32,27 +33,28 @@ function directoryRequest(sort) {
   }];
 }
 
-export function candidatesFromEdges(edges) {
+export function candidatesFromEdges(edges, profile, language) {
   return edges.flatMap(({ node: stream }) => {
     const login = stream?.broadcaster?.login;
     if (!LOGIN.test(login ?? "") || stream?.game?.slug !== GAME || stream.type !== "live") return [];
     const title = String(stream.title ?? "");
     const displayName = stream.broadcaster.displayName || login;
     const tags = (Array.isArray(stream.freeformTags) ? stream.freeformTags : []).map((tag) => tag?.name);
-    if (isOtherGameOrReplay(title) || !isBrazilianAudience({ language: "pt", title, name: displayName, tags })) return [];
+    if (isOtherGameOrReplay(title)) return [];
     return [makeCandidate({
       platform: id, channelId: login.toLowerCase(), displayName, handle: login,
-      url: `https://www.twitch.tv/${login}`, title
+      url: `https://www.twitch.tv/${login}`, title,
+      regionalMatch: hasRegionSignals(profile, { language, title, name: displayName, tags })
     })];
   });
 }
 
-async function fetchWindow(sort, signal) {
+async function fetchWindow(sort, language, signal) {
   const response = await fetch(GQL_URL, {
     method: "POST",
     headers: { "Client-Id": CLIENT_ID, "Content-Type": "text/plain;charset=UTF-8" },
     credentials: "omit",
-    body: JSON.stringify(directoryRequest(sort)),
+    body: JSON.stringify(directoryRequest(sort, language)),
     signal
   });
   if (!response.ok) throw new Error(`Twitch retornou ${response.status}`);
@@ -64,14 +66,28 @@ async function fetchWindow(sort, signal) {
   return streams;
 }
 
-export async function fetchLiveChannels() {
-  const signal = AbortSignal.timeout(9000);
-  const first = await fetchWindow("RELEVANCE", signal);
-  const candidates = candidatesFromEdges(first.edges);
+async function fetchDirectory(profile, language, signal) {
+  const first = await fetchWindow("RELEVANCE", language, signal);
+  const candidates = candidatesFromEdges(first.edges, profile, language);
   if (!first.pageInfo.hasNextPage) return { candidates, complete: true };
 
   // The public quick listing has a fixed window. Also ask for the lower-audience end.
-  const tail = await fetchWindow("VIEWER_COUNT_ASC", signal).catch(() => null);
-  if (tail) candidates.push(...candidatesFromEdges(tail.edges));
+  const tail = await fetchWindow("VIEWER_COUNT_ASC", language, signal).catch(() => null);
+  if (tail) candidates.push(...candidatesFromEdges(tail.edges, profile, language));
   return { candidates, complete: tail?.pageInfo.hasNextPage === false };
+}
+
+export async function fetchLiveChannels({ region, mode }) {
+  const profile = regionProfile(region);
+  const signal = AbortSignal.timeout(9000);
+  const languages = region === WORLD || !profile.language ? [null] : [profile.language, null];
+  if (region === "BR" && mode === "only") languages.pop();
+
+  const results = await Promise.allSettled(languages.map((language) => fetchDirectory(profile, language, signal)));
+  const successful = results.filter((result) => result.status === "fulfilled");
+  if (!successful.length) throw new Error("Catálogo da Twitch indisponível");
+  return {
+    candidates: successful.flatMap((result) => result.value.candidates),
+    complete: successful.length === results.length && successful.every((result) => result.value.complete)
+  };
 }
