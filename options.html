@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <title>Opções - SMB Live GTA VI</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <main class="settings">
+      <header class="hero">
+        <img class="hero-art" id="hero-art" alt="" referrerpolicy="no-referrer"
+          src="https://www.rockstargames.com/VI/_next/static/media/Jason_Lucia_Rooftop_landscape.0c6p5do~-8~7..jpg">
+        <div class="hero-title">
+          <img src="icons/live-48.png" width="38" height="38" alt="">
+          <div>
+            <span class="wordmark">SMB</span>
+            <h1>Live <span>GTA VI</span></h1>
+            <p>Configurações do sorteio</p>
+          </div>
+        </div>
+        <a class="art-credit" id="art-credit" href="https://www.rockstargames.com/VI/media"
+          target="_blank" rel="noopener noreferrer">Arte: Rockstar Games</a>
+      </header>
+
+      <section class="panel" aria-labelledby="platforms-title">
+        <h2 id="platforms-title">Plataformas no sorteio</h2>
+        <p class="hint">Clique no ícone da extensão para abrir uma live das plataformas marcadas.</p>
+
+        <label class="choice">
+          <input type="checkbox" id="platform-twitch" checked>
+          <span>
+            <strong>Twitch</strong>
+            <small>Categoria GTA VI, idioma declarado e sinais de Brasil.</small>
+          </span>
+        </label>
+
+        <label class="choice">
+          <input type="checkbox" id="platform-youtube" checked>
+          <span>
+            <strong>YouTube</strong>
+            <small>Busca de lives de GTA VI com sinais de PT-BR no título ou canal.</small>
+          </span>
+        </label>
+
+        <label class="choice">
+          <input type="checkbox" id="platform-kick" checked>
+          <span>
+            <strong>Kick</strong>
+            <small>Categoria GTA VI, idioma declarado e sinais de Brasil.</small>
+          </span>
+        </label>
+        <p id="platforms-status" class="status" role="status"></p>
+      </section>
+
+      <section class="panel locale" aria-labelledby="locale-title">
+        <div>
+          <h2 id="locale-title">Idioma do sorteio</h2>
+          <p>Entram as lives com sinais públicos de português do Brasil.</p>
+        </div>
+        <span class="locale-tag">Brasil · PT-BR</span>
+      </section>
+
+      <section class="panel" aria-labelledby="creators-title">
+        <h2 id="creators-title">Quando o criador está em mais de uma plataforma</h2>
+        <label class="choice">
+          <input type="checkbox" id="separate-lives" checked>
+          <span>
+            <strong>Sortear cada transmissão separadamente</strong>
+            <small>Uma live na Twitch e outra na Kick ganham uma vaga cada. Desmarque para agrupar canais com nomes de usuário semelhantes.</small>
+          </span>
+        </label>
+        <p id="separate-status" class="status" role="status"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="round-title">
+        <h2 id="round-title">Rodada atual</h2>
+        <p class="hint" id="cycle-summary">Carregando rodada…</p>
+        <button type="button" id="reset-cycle">Reiniciar rodada</button>
+        <p id="reset-status" class="status" role="status"></p>
+        <p id="discovery-status" class="discovery" hidden></p>
+      </section>
+
+      <section class="panel notice" aria-labelledby="notice-title">
+        <h2 id="notice-title">Sem repetição precoce</h2>
+        <p>Cada vaga tem a mesma chance de sair. Depois de sorteada, só volta na próxima rodada.</p>
+      </section>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

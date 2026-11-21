@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "SMB Live GTA VI",
+  "version": "1.0.0",
+  "description": "Abre uma live brasileira de GTA VI na Twitch, YouTube ou Kick e percorre a rodada sem repetir.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://gql.twitch.tv/*",
+    "https://www.youtube.com/*",
+    "https://kick.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Sortear live BR de GTA VI",
+    "default_icon": {
+      "16": "icons/live-16.png",
+      "32": "icons/live-32.png",
+      "48": "icons/live-48.png",
+      "128": "icons/live-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/live-16.png",
+    "32": "icons/live-32.png",
+    "48": "icons/live-48.png",
+    "128": "icons/live-128.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  }
+}
